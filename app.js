@@ -4,6 +4,8 @@
 var allProducts = [];
 var usedImages = [];
 var selections = 0;
+var data = [];
+var productNames = [];
 
 //Create a constructor for the products
 
@@ -39,7 +41,7 @@ new Product('USB', 'img/usb.gif');
 new Product('Water Can', 'img/water-can.jpg');
 new Product('Wine Glass', 'img/wine-glass.jpg');
 
-//Display 3 randomly slelected products to the page
+//Display 3 randomly selected products to the page
 
 function inArray(num, array) {
   for(var i = 0; i <= array.length; i++) {
@@ -87,25 +89,35 @@ function getRandImage(array) {
 getRandImage(allProducts);
 
 //Display results to the page as a list
-function displayResults() {
-  var pageWrapper = document.createElement('div');
-  var ulEl = document.createElement('ul');
-  var h2El = document.createElement('h2');
-
-  h2El.textContent = 'You\'re done! Here are the results!';
-  document.body.appendChild(pageWrapper);
-  pageWrapper.id = 'wrapper';
-
+function getData() {
   for(var i = 0; i < allProducts.length; i++) {
-    var liEl = document.createElement('li');
-    var message = allProducts[i].numClicked + ' votes for the ' + allProducts[i].name + '.';
-    liEl.textContent = message;
-    ulEl.appendChild(liEl);
+    data.push(allProducts[i].numClicked);
+    productNames.push(allProducts[i].name);
   }
-  pageWrapper.appendChild(h2El);
-  pageWrapper.appendChild(ulEl);
 }
-
+function createChart () {
+  var ctx = document.getElementById('chart').getContext('2d');
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: productNames,
+      datasets: [{
+        label: '# of Clicks',
+        data: data,
+        backgroundColor: 'black'
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
+}
 //create click handler for images
 function handleImageClick(event) {
   if(event.target !== event.currentTarget) {
@@ -128,9 +140,45 @@ function handleImageClick(event) {
   if(selections === 25) {
     wrapper.removeEventListener('click', handleImageClick);
     wrapper.remove();
-    displayResults();
+    getData();
+    createChart();
+    var dataResults = JSON.stringify(allProducts);
+    localStorage.setItem('Data', dataResults);
   }
 }
 
 var wrapper = document.getElementById('wrapper');
 wrapper.addEventListener('click', handleImageClick);
+
+// 'use strict';
+
+// //stringify all the things
+// //localStorage.setItem()
+// //add all the things to local storage
+// //what are all the things in bus mall? votes and names, clicks
+// //our stuff in local storage will be in JSON and not only JSON but stringified JSON
+//
+// var tyler = {
+//   name: 'Tyler',
+//   instructor: true,
+//   favoriteNumber: 6,
+//   laughs: function() {
+//     alert('hahahaha');
+//   }
+// };
+//
+// var arrayChul = ['Rachel', 37, true, 'no-dog'];
+//
+// var anotherArray = ['random', 9, false, tyler, arrayChul];
+//
+// var clearLS = document.getElementById('clearStorage');
+//
+// clearLS.addEventListener('click', function() {
+//   console.log('click it!');
+//   localStorage.clear();
+// });
+// //localStorage.getItem();
+// var retrieved = localStorage.getItem('awesome');
+//
+// //unstringify technically called is 'parse'
+// var parsed = JSON.parse(retrieved);
